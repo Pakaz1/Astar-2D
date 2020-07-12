@@ -15,9 +15,8 @@ namespace Astar_Algorithm
         public int F; //Sum value of G and H
         public NodeInformation Parent = null;
     }
-    public class Program
+    class AstarLogic
     {
-        /*
         public static string[] map = new string[]     {"+-----------------+",
                                                        "|A  X             |",
                                                        "| X X X           |",
@@ -25,10 +24,8 @@ namespace Astar_Algorithm
                                                        "|   XXX           |",
                                                        "+-----------------+",
                                         };
-        */
         static void Main(string[] args)
         {
-            /*
             foreach (var a in map)
                 Console.WriteLine(a);
 
@@ -60,7 +57,6 @@ namespace Astar_Algorithm
             foreach (var a in map)
                 Console.WriteLine(a);
             Console.ReadKey();
-            */
         }
         public static SimplePriorityQueue<NodeInformation> Astar(string[] map, NodeInformation start, NodeInformation goal)
         {
@@ -89,8 +85,8 @@ namespace Astar_Algorithm
                     return reconstructPath(currentNode);
 
                 closedList.Add(currentNode);
-                List<NodeInformation> neighbours = calculateNeighbours(currentNode, map);
-                foreach(var neighbour in neighbours)
+                List<NodeInformation> neighbours = calculateNeighbours(currentNode);
+                foreach (var neighbour in neighbours)
                 {
                     if (closedList.Count(o => o.X == neighbour.X && o.Y == neighbour.Y) > 0) //The way this is implemented could be better/maybe will fix later
                         continue;
@@ -98,7 +94,7 @@ namespace Astar_Algorithm
                     neighbour.G = currentNode.G + 1;
                     neighbour.F = neighbour.H + neighbour.G;
                     neighbour.Parent = currentNode;
-                    if(!openSet.Contains(neighbour))
+                    if (!openSet.Contains(neighbour))
                     {
                         openSet.Enqueue(neighbour, neighbour.F);//fScore[neighbour]);
                     }
@@ -106,7 +102,7 @@ namespace Astar_Algorithm
             }
             return null; //If all failed
         }
-        static List<NodeInformation> calculateNeighbours(NodeInformation current, string[] map)
+        static List<NodeInformation> calculateNeighbours(NodeInformation current)
         {
             List<NodeInformation> newList = new List<NodeInformation>();
             //Gather all possible neighbours(4 directions right now)
@@ -124,7 +120,7 @@ namespace Astar_Algorithm
         {
             SimplePriorityQueue<NodeInformation> total_path = new SimplePriorityQueue<NodeInformation>();
             total_path.Enqueue(current, 0);
-            while(current.Parent != null)
+            while (current.Parent != null)
             {
                 current = current.Parent;
                 total_path.Enqueue(current, 0);

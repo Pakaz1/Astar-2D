@@ -1,5 +1,4 @@
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\bin\Debug\netcoreapp3.1\Astar-Algorithm.exe
-F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.csprojAssemblyReference.cache
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.AssemblyInfoInputs.cache
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.AssemblyInfo.cs
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\bin\Debug\netcoreapp3.1\Astar-Algorithm.deps.json
@@ -13,3 +12,4 @@ F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.dll
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.pdb
 F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.genruntimeconfig.cache
+F:\aaaaa\Astar-2D\Astar-Algorithm\Astar-Algorithm\obj\Debug\netcoreapp3.1\Astar-Algorithm.csprojAssemblyReference.cache
