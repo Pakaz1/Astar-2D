@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="AstarLogic.cs" />
+    <Compile Remove="mapArray.cs" />
   </ItemGroup>
 
   <ItemGroup>

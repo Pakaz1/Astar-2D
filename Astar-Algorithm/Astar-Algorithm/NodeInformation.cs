@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AstarGUI
 {
-    public class NodeInformation
+    /*public class NodeInformation
     {
         public int X; //Nodes X location
         public int Y; //Nodes Y location
@@ -15,4 +15,5 @@ namespace AstarGUI
         public int F; //Sum value of G and H
         public NodeInformation Parent = null;
     }
+    */
 }
