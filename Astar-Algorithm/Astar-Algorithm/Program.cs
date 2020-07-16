@@ -67,7 +67,7 @@ namespace Astar_Algorithm
             Console.ReadKey();
             */
         }
-        public static SimplePriorityQueue<NodeInformation> Astar(string[] map, NodeInformation start, NodeInformation goal)
+        public static SimplePriorityQueue<NodeInformation> Astar(string[] map, NodeInformation start, NodeInformation goal, int distanceCalculateValue, int neighbourValue)
         {
             NodeInformation currentNode = null;
 
@@ -92,13 +92,13 @@ namespace Astar_Algorithm
                     return reconstructPath(currentNode);
 
                 closedList.Add(currentNode);
-                List<NodeInformation> neighbours = calculateNeighbours(currentNode, map);
+                List<NodeInformation> neighbours = calculateNeighbours(currentNode, map, neighbourValue);
                 foreach(var neighbour in neighbours)
                 {
                     if (closedList.Exists(o => o.X == neighbour.X && o.Y == neighbour.Y))
                         continue;
 
-                    neighbour.H = calculateHEuclidianValue(neighbour, goal);
+                    neighbour.H = distanceCalculateValue == 0 ? calculateHManhattanValue(neighbour, goal) : calculateHEuclidianValue(neighbour, goal);
                     neighbour.G = currentNode.G + 1;
                     neighbour.F = neighbour.H + neighbour.G;
                     neighbour.Parent = currentNode;
@@ -106,6 +106,7 @@ namespace Astar_Algorithm
                     //There should be an if statement to check if coming from this node is better than any other before
                     //Since it's a 2D array I don't think this really matters since you're most likely already going from the best position
 
+                    //Writing an equals in NodeInformation class and using .Contains() might be more clear than this, but this works just fine
                     if (!openSet.Any(o => o.X == neighbour.X && o.Y == neighbour.Y))
                     {
                         openSet.Enqueue(neighbour, neighbour.F);//fScore[neighbour]);
@@ -114,26 +115,23 @@ namespace Astar_Algorithm
             }
             return null; //If all failed
         }
-        static List<NodeInformation> calculateNeighbours(NodeInformation current, string[] map)
+        static List<NodeInformation> calculateNeighbours(NodeInformation current, string[] map, int value)
         {
+            //Value 0 for 4 neighbours and Value 1 for 8 neighbours
             List<NodeInformation> newList = new List<NodeInformation>();
-            //Gather all possible neighbours(8 directions right now)
-            /*
-            if (map[current.Y].ToCharArray()[current.X + 1] == ' ' || map[current.Y].ToCharArray()[current.X + 1] == 'B') newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y });
-            if (map[current.Y].ToCharArray()[current.X - 1] == ' ' || map[current.Y].ToCharArray()[current.X - 1] == 'B') newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y });
-            if (map[current.Y + 1].ToCharArray()[current.X] == ' ' || map[current.Y + 1].ToCharArray()[current.X] == 'B') newList.Add(new NodeInformation { X = current.X, Y = current.Y + 1 });
-            if (map[current.Y - 1].ToCharArray()[current.X] == ' ' || map[current.Y - 1].ToCharArray()[current.X] == 'B') newList.Add(new NodeInformation { X = current.X, Y = current.Y - 1 });
-            */
-            int[] X = { -1, 1 };
-            int[] Y = { -1, 1 };
+            //Gather all possible neighbours(depending on selected directions)
             newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y });
             newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y });
             newList.Add(new NodeInformation { X = current.X, Y = current.Y + 1 });
             newList.Add(new NodeInformation { X = current.X, Y = current.Y - 1 });
-            //if (map[current.Y + 1].ToCharArray()[current.X + 1] == ' ' || map[current.Y + 1].ToCharArray()[current.X + 1] == 'B') newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y + 1});
-            //if (map[current.Y - 1].ToCharArray()[current.X + 1] == ' ' || map[current.Y - 1].ToCharArray()[current.X + 1] == 'B') newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y - 1 });
-            //if (map[current.Y + 1].ToCharArray()[current.X - 1] == ' ' || map[current.Y + 1].ToCharArray()[current.X - 1] == 'B') newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y + 1 });
-            //if (map[current.Y - 1].ToCharArray()[current.X - 1] == ' ' || map[current.Y - 1].ToCharArray()[current.X - 1] == 'B') newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y - 1 });
+            //Selected value is for 8 neighbours so add the 4 corner ones
+            if (value == 1)
+            {
+                newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y + 1});
+                newList.Add(new NodeInformation { X = current.X + 1, Y = current.Y - 1 });
+                newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y + 1 });
+                newList.Add(new NodeInformation { X = current.X - 1, Y = current.Y - 1 });
+            }
             return newList.Where(o => map[o.Y][o.X] == ' ' || map[o.Y][o.X] == 'B').ToList();
         }
         static int calculateHManhattanValue(NodeInformation current, NodeInformation goal)

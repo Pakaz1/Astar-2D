@@ -15,8 +15,15 @@ namespace AstarGUI
 {
     public partial class Form1 : Form
     {
-        //public static mapArray map = new mapArray(10);
         public static int mapSize = 10;
+
+        bool Aexists = false;
+        int oldAx = -1;
+        int oldAy = -1;
+
+        bool Bexists = false;
+        int oldBx = -1;
+        int oldBy = -1;
 
         public Button[,] buttonGrid = new Button[mapSize + 2, mapSize + 2];
         public Form1()
@@ -26,6 +33,11 @@ namespace AstarGUI
             //The properties on numericUpDown always reset so I am doing them here
             numericUpDown1.Value = 10;
             numericUpDown1.Minimum = 1;
+            //--------------------------------------------------------------------
+            //comboBoxes originally don't have this value or I am blind
+            comboBox1.SelectedIndex = 0;
+            comboBox2.SelectedIndex = 0;
+            comboBox3.SelectedIndex = 0;
             //--------------------------------------------------------------------
         }
 
@@ -56,7 +68,7 @@ namespace AstarGUI
 
                     buttonGrid[i + 1, j + 1].Location = new Point(i * buttonSize, j * buttonSize);
 
-                    buttonGrid[i + 1, j + 1].Text = (i + 1) + "|" + (j + 1);
+                    //buttonGrid[i + 1, j + 1].Text = (i + 1) + "|" + (j + 1);
                     buttonGrid[i + 1, j + 1].Tag = new Point(i + 1, j + 1);
                 }
             }
@@ -66,55 +78,134 @@ namespace AstarGUI
             Button clickedButton = (Button) sender;
             Point location = (Point) clickedButton.Tag;
 
-
             int x = location.X;
             int y = location.Y;
 
-            int oldAx = 0;
-            int oldAy = 0;
-
-            int oldBx = 0;
-            int oldBy = 0;
-
-            bool foundA = false;
-            bool foundB = false;
-
-
-            for(int i = 1; i <= mapSize; i++)
+            //This is a lot to take in but its faster than going through the whole map grid and finding A, B individually
+            //Few if statements versus N x N grid with statements
+            switch (comboBox1.SelectedIndex)
             {
-                for(int j = 1; j <= mapSize; j++)
+                //If the user is placing the starting point(A's)
+                case 0:
+                    //Check if the new A replaces the already standing B
+                    if(Bexists && x == oldBx && y == oldBy)
+                    {
+                        Bexists = false;
+                        oldBx = -1;
+                        oldBy = -1;
+                        resetMap();
+                    }
+                    if(Aexists)
+                    {
+                        Aexists = (oldAx == x && oldAy == y ? false : true);
+                        //We replace old A with a new one if it existed before
+                        if (Aexists)
+                        {
+                            buttonGrid[x, y].Text = "A";
+                            buttonGrid[oldAx, oldAy].Text = "";
+                            oldAx = x;
+                            oldAy = y;
+                        }
+                        //If the coordinates matched we remove A
+                        else
+                        {
+                            buttonGrid[x, y].Text = "";
+                            resetMap();
+                        }
+                    }
+                    //There are no A's on the grid and we just place one
+                    else
+                    {
+                        buttonGrid[x, y].Text = "A";
+                        oldAx = x;
+                        oldAy = y;
+                        Aexists = true;
+                    }
+
+                    break;
+                //If the user is placing the goal point(B's)
+                case 1:
+                    //Check if the new B replaces the aldready standing A
+                    if (Aexists && x == oldAx && y == oldAy)
+                    {
+                        Aexists = false;
+                        oldAx = -1;
+                        oldAy = -1;
+                        resetMap();
+                    }
+                    if (Bexists)
+                    {
+                        Bexists = (oldBx == x && oldBy == y ? false : true);
+                        //We replace old B with a new one if it existed before
+                        if (Bexists)
+                        {
+                            buttonGrid[x, y].Text = "B";
+                            buttonGrid[oldBx, oldBy].Text = "";
+                            oldBx = x;
+                            oldBy = y;
+                        }
+                        //If the coordinates matched we remove B
+                        else
+                        {
+                            buttonGrid[x, y].Text = "";
+                            resetMap();
+                        }
+                    }
+                    //There are no B's on the grid and we just place one
+                    else
+                    {
+                        buttonGrid[x, y].Text = "B";
+                        oldBx = x;
+                        oldBy = y;
+                        Bexists = true;
+                    }
+                    break;
+                //If the user is placing Walls(X's)
+                case 2:
+                    //Check if the wall is replacing any of the existing starting/goal positions and reset the map if they are
+                    if(Aexists && oldAx == x && oldAy == y)
+                    {
+                        Aexists = false;
+                        oldAx = -1;
+                        oldAy = -1;
+                        resetMap();
+                    }
+                    if (Bexists && oldBx == x && oldBy == y)
+                    {
+                        Bexists = false;
+                        oldBx = -1;
+                        oldBy = -1;
+                        resetMap();
+                    }
+                    buttonGrid[x, y].Text = buttonGrid[x, y].Text != "X" ? "X" : ""; 
+                    break;
+            }
+            checkAndDrawMap();
+        }
+        /// <summary>
+        /// Removes all values except for A, B and X
+        /// </summary>
+        public void resetMap()
+        {
+            string[] values = { "A", "B", "X" };
+            for (int i = 1; i <= mapSize; i++)
+            {
+                for (int j = 1; j <= mapSize; j++)
                 {
-                    if (buttonGrid[i, j].Text == "A")
-                    {
-                        oldAx = i;
-                        oldAy = j;
-                    }
-                    else if (buttonGrid[i, j].Text == "B")
-                    {
-                        oldBx = i;
-                        oldBy = j;
-                    }
-                    else if (buttonGrid[i, j].Text == "X") continue;
+                    if (values.Contains(buttonGrid[i, j].Text)) continue;
                     else
                         buttonGrid[i, j].Text = "";
                 }
             }
-            
-            switch(comboBox1.SelectedIndex)
-            {
-                case 0:
-                    buttonGrid[x, y].Text = "A";
-                    buttonGrid[oldAx, oldAy].Text = "";
-                    break;
-                case 1:
-                    buttonGrid[x, y].Text = "B";
-                    buttonGrid[oldBx, oldBy].Text = "";
-                    break;
-                case 2:
-                    if (buttonGrid[x, y].Text != "X") buttonGrid[x, y].Text = "X";
-                    else buttonGrid[x, y].Text = "";
-                    break;
-            }
+        }
+        /// <summary>
+        /// Checks if A and B exists and we apply A* algorithm if they do
+        /// </summary>
+        public void checkAndDrawMap()
+        {
+            if (!Aexists || !Bexists) return; //A and B simply doesnt exist so theres no point in trying to do anything with the algorithm
+
+            resetMap();
 
             string[] mapForAstar = new string[mapSize + 2]; //Map for Astar algorithm | +2 because top and bottom are extra boundries
 
@@ -134,27 +225,22 @@ namespace AstarGUI
                     a += buttonGrid[j, i].Text == "" ? " " : buttonGrid[j, i].Text;
                     if (buttonGrid[j, i].Text == "A")
                     {
-                        foundA = true;
                         start.X = j;
                         start.Y = i;
                     }
                     else if (buttonGrid[j, i].Text == "B")
                     {
-                        foundB = true;
                         goal.X = j;
                         goal.Y = i;
                     }
                 }
                 mapForAstar[i] = a + "+";
             }
-            if (foundA && foundB)
-            {
-                calculateAndShowAstar(mapForAstar, start, goal);
-            }
+            calculateAndShowAstar(mapForAstar, start, goal);
         }
         public void calculateAndShowAstar(string[] mapForAstar, NodeInformation start, NodeInformation goal)
         {
-            SimplePriorityQueue<Astar_Algorithm.NodeInformation> path_to_take = Astar_Algorithm.Program.Astar(mapForAstar, start, goal);
+            SimplePriorityQueue<Astar_Algorithm.NodeInformation> path_to_take = Astar_Algorithm.Program.Astar(mapForAstar, start, goal, comboBox2.SelectedIndex, comboBox3.SelectedIndex);
             if (path_to_take != null)
             {
                 path_to_take.Remove(path_to_take.Last());
@@ -167,21 +253,6 @@ namespace AstarGUI
             }
         }
 
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown upDown = (NumericUpDown)sender;
@@ -191,9 +262,14 @@ namespace AstarGUI
             populateGrid();
         }
 
-        private void label4_Click(object sender, EventArgs e)
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
+            checkAndDrawMap();
+        }
 
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            checkAndDrawMap();
         }
     }
 }
