@@ -1,14 +1,8 @@
 ﻿using Astar_Algorithm;
 using Priority_Queue;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AstarGUI
@@ -17,6 +11,7 @@ namespace AstarGUI
     {
         public static int mapSize = 10;
 
+        //Variables to keep track of placed nodes(goal/beginning)
         bool Aexists = false;
         int oldAx = -1;
         int oldAy = -1;
@@ -24,6 +19,7 @@ namespace AstarGUI
         bool Bexists = false;
         int oldBx = -1;
         int oldBy = -1;
+        //--------------------------------------------------------
 
         public Button[,] buttonGrid = new Button[mapSize + 2, mapSize + 2];
         public Form1()
@@ -41,6 +37,9 @@ namespace AstarGUI
             //--------------------------------------------------------------------
         }
 
+        /// <summary>
+        /// Fills the created panel with buttons of given mapSize
+        /// </summary>
         private void populateGrid()
         {
             int buttonSize = panel1.Width / mapSize;
@@ -73,6 +72,12 @@ namespace AstarGUI
                 }
             }
         }
+
+        /// <summary>
+        /// On button click updates the array of buttons(their text)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Grid_Button_Click(object sender, EventArgs e)
         {
             Button clickedButton = (Button) sender;
@@ -90,9 +95,7 @@ namespace AstarGUI
                     //Check if the new A replaces the already standing B
                     if(Bexists && x == oldBx && y == oldBy)
                     {
-                        Bexists = false;
-                        oldBx = -1;
-                        oldBy = -1;
+                        resetB();
                         resetMap();
                     }
                     if(Aexists)
@@ -128,9 +131,7 @@ namespace AstarGUI
                     //Check if the new B replaces the aldready standing A
                     if (Aexists && x == oldAx && y == oldAy)
                     {
-                        Aexists = false;
-                        oldAx = -1;
-                        oldAy = -1;
+                        resetA();
                         resetMap();
                     }
                     if (Bexists)
@@ -165,16 +166,12 @@ namespace AstarGUI
                     //Check if the wall is replacing any of the existing starting/goal positions and reset the map if they are
                     if(Aexists && oldAx == x && oldAy == y)
                     {
-                        Aexists = false;
-                        oldAx = -1;
-                        oldAy = -1;
+                        resetA();
                         resetMap();
                     }
                     if (Bexists && oldBx == x && oldBy == y)
                     {
-                        Bexists = false;
-                        oldBx = -1;
-                        oldBy = -1;
+                        resetB();
                         resetMap();
                     }
                     buttonGrid[x, y].Text = buttonGrid[x, y].Text != "X" ? "X" : ""; 
@@ -182,6 +179,7 @@ namespace AstarGUI
             }
             checkAndDrawMap();
         }
+
         /// <summary>
         /// Removes all values except for A, B and X
         /// </summary>
@@ -198,6 +196,7 @@ namespace AstarGUI
                 }
             }
         }
+
         /// <summary>
         /// Checks if A and B exists and we apply A* algorithm if they do
         /// </summary>
@@ -238,6 +237,13 @@ namespace AstarGUI
             }
             calculateAndShowAstar(mapForAstar, start, goal);
         }
+
+        /// <summary>
+        /// Calculates the A* algorithm for a given map with starting and ending nodes
+        /// </summary>
+        /// <param name="mapForAstar">The map to apply A* algorithm</param>
+        /// <param name="start">Starting node</param>
+        /// <param name="goal">Endingg node</param>
         public void calculateAndShowAstar(string[] mapForAstar, NodeInformation start, NodeInformation goal)
         {
             SimplePriorityQueue<Astar_Algorithm.NodeInformation> path_to_take = Astar_Algorithm.Program.Astar(mapForAstar, start, goal, comboBox2.SelectedIndex, comboBox3.SelectedIndex);
@@ -253,23 +259,60 @@ namespace AstarGUI
             }
         }
 
+        /// <summary>
+        /// On value change, creates new buttons with changed value in the panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown upDown = (NumericUpDown)sender;
             panel1.Controls.Clear();
             mapSize = (int) upDown.Value;
             buttonGrid = new Button[mapSize + 2, mapSize + 2];
+            resetA();
+            resetB();
             populateGrid();
         }
 
+        /// <summary>
+        /// The distance calculation method has been changed and the map should be redrawn according to it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkAndDrawMap();
         }
 
+        /// <summary>
+        /// The amount of neighbours the user wants visited has been changed and the map should be redrawn according to it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             checkAndDrawMap();
+        }
+
+        /// <summary>
+        /// Resets the global variables for A information
+        /// </summary>
+        private void resetA()
+        {
+            Aexists = false;
+            oldAx = -1;
+            oldAy = -1;
+        }
+        
+        /// <summary>
+        /// Resets the global variables for B information
+        /// </summary>
+        private void resetB()
+        {
+            Bexists = false;
+            oldBx = -1;
+            oldBy = -1;
         }
     }
 }
