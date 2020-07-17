@@ -1,2 +1,3 @@
 # Astar-2D
-Trying to create A* with console 2D application then convert it to have a graphical design
+Visualiser of the A* algorithm with different settings
+![Example1](https://user-images.githubusercontent.com/61023046/87816171-9120ea80-c86f-11ea-92df-906bac82511f.png)
